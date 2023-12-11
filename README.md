@@ -6,5 +6,5 @@
 install
 ```
 brew install sqlc
-sqlc gen
+sqlc generate
 ```
