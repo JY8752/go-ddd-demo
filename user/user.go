@@ -16,6 +16,14 @@ func New(name *FullName) *User {
 	return &User{id: uuid, name: name}
 }
 
+func (u *User) Id() uuid.UUID {
+	return u.id
+}
+
+func (u *User) Name() *FullName {
+	return u.name
+}
+
 func (u *User) Equals(other *User) bool {
 	return u.id == other.id
 }

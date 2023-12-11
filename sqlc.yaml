@@ -1,0 +1,9 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "cmd/5/sql/query.sql"
+    schema: "cmd/5/sql/schema.sql"
+    gen:
+      go:
+        package: "infrastructure"
+        out: "infrastructure"
