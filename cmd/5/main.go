@@ -36,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	u := user.New(name)
+	u := user.NewFromName(name)
 
 	// ドメインサービスを作成
 	service := user.NewService(repository)

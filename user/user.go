@@ -11,9 +11,13 @@ type User struct {
 	name *FullName
 }
 
-func New(name *FullName) *User {
+func NewFromName(name *FullName) *User {
 	uuid := uuid.New()
 	return &User{id: uuid, name: name}
+}
+
+func New(id uuid.UUID, name *FullName) *User {
+	return &User{id, name}
 }
 
 func (u *User) Id() uuid.UUID {

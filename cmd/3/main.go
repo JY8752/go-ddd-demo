@@ -12,8 +12,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	u := user.New(n)
-	uu := user.New(n)
+	u := user.NewFromName(n)
+	uu := user.NewFromName(n)
 	fmt.Println(u.Equals(uu)) // false 同じ名前のユーザーだけど識別子が異なる
 
 	n, err = user.NewFullName("yamanaka", "jun")

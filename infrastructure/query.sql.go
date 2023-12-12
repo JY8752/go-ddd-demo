@@ -28,6 +28,17 @@ func (q *Queries) CrateUser(ctx context.Context, arg CrateUserParams) (User, err
 	return i, err
 }
 
+const deleteUser = `-- name: DeleteUser :one
+delete from users where id = ? returning id, first_name, last_name
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id string) (User, error) {
+	row := q.db.QueryRowContext(ctx, deleteUser, id)
+	var i User
+	err := row.Scan(&i.ID, &i.FirstName, &i.LastName)
+	return i, err
+}
+
 const findUser = `-- name: FindUser :one
 select id, first_name, last_name from users where id = ?
 `
@@ -50,6 +61,23 @@ type FindUserByNameParams struct {
 
 func (q *Queries) FindUserByName(ctx context.Context, arg FindUserByNameParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, findUserByName, arg.FirstName, arg.LastName)
+	var i User
+	err := row.Scan(&i.ID, &i.FirstName, &i.LastName)
+	return i, err
+}
+
+const updateUserName = `-- name: UpdateUserName :one
+update users set first_name = ?, last_name = ? where id = ? returning id, first_name, last_name
+`
+
+type UpdateUserNameParams struct {
+	FirstName string
+	LastName  string
+	ID        string
+}
+
+func (q *Queries) UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserName, arg.FirstName, arg.LastName, arg.ID)
 	var i User
 	err := row.Scan(&i.ID, &i.FirstName, &i.LastName)
 	return i, err

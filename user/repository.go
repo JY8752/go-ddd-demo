@@ -58,6 +58,30 @@ func (r *Repository) FindByName(ctx context.Context, firstName, lastName string)
 	return convertDTO(u), nil
 }
 
+func (r *Repository) UpdateName(ctx context.Context, id, firstName, lastName string) (*DTO, error) {
+	params := infrastructure.UpdateUserNameParams{
+		FirstName: firstName,
+		LastName:  lastName,
+		ID:        id,
+	}
+
+	u, err := r.queries.UpdateUserName(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertDTO(u), nil
+}
+
+func (r *Repository) Delete(ctx context.Context, id string) (*DTO, error) {
+	u, err := r.queries.DeleteUser(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertDTO(u), nil
+}
+
 func convertDTO(u infrastructure.User) *DTO {
 	return NewDTO(u.ID, u.FirstName, u.LastName)
 }

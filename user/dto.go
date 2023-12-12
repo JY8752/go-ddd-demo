@@ -1,9 +1,9 @@
 package user
 
 type DTO struct {
-	id        string
-	firstName string
-	lastName  string
+	Id        string
+	FirstName string
+	LastName  string
 }
 
 func NewDTO(id, firstName, lastName string) *DTO {
