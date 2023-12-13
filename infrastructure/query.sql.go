@@ -28,6 +28,25 @@ func (q *Queries) CrateUser(ctx context.Context, arg CrateUserParams) (User, err
 	return i, err
 }
 
+const createCircle = `-- name: CreateCircle :one
+insert into circles(id, name, user_id)
+values(?, ?, ?)
+returning id, name, user_id
+`
+
+type CreateCircleParams struct {
+	ID     string
+	Name   string
+	UserID string
+}
+
+func (q *Queries) CreateCircle(ctx context.Context, arg CreateCircleParams) (Circle, error) {
+	row := q.db.QueryRowContext(ctx, createCircle, arg.ID, arg.Name, arg.UserID)
+	var i Circle
+	err := row.Scan(&i.ID, &i.Name, &i.UserID)
+	return i, err
+}
+
 const deleteUser = `-- name: DeleteUser :one
 delete from users where id = ? returning id, first_name, last_name
 `
@@ -36,6 +55,17 @@ func (q *Queries) DeleteUser(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRowContext(ctx, deleteUser, id)
 	var i User
 	err := row.Scan(&i.ID, &i.FirstName, &i.LastName)
+	return i, err
+}
+
+const findByCircleName = `-- name: FindByCircleName :one
+select id, name, user_id from circles where name = ?
+`
+
+func (q *Queries) FindByCircleName(ctx context.Context, name string) (Circle, error) {
+	row := q.db.QueryRowContext(ctx, findByCircleName, name)
+	var i Circle
+	err := row.Scan(&i.ID, &i.Name, &i.UserID)
 	return i, err
 }
 

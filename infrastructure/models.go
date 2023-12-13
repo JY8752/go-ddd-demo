@@ -6,6 +6,12 @@ package infrastructure
 
 import ()
 
+type Circle struct {
+	ID     string
+	Name   string
+	UserID string
+}
+
 type User struct {
 	ID        string
 	FirstName string

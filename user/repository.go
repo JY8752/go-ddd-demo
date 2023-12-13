@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"ddd-demo/infrastructure"
+
+	"github.com/google/uuid"
 )
 
 type Repository struct {
@@ -20,7 +22,7 @@ func (r *Repository) CreateTables(ctx context.Context, ddl string) error {
 	return err
 }
 
-func (r *Repository) CreateUser(ctx context.Context, id, firstName, lastName string) (*DTO, error) {
+func (r *Repository) CreateUser(ctx context.Context, id, firstName, lastName string) (*User, error) {
 	params := infrastructure.CrateUserParams{
 		ID:        id,
 		FirstName: firstName,
@@ -32,19 +34,19 @@ func (r *Repository) CreateUser(ctx context.Context, id, firstName, lastName str
 		return nil, err
 	}
 
-	return convertDTO(u), nil
+	return convertEntity(u)
 }
 
-func (r *Repository) FindById(ctx context.Context, id string) (*DTO, error) {
+func (r *Repository) FindById(ctx context.Context, id string) (*User, error) {
 	u, err := r.queries.FindUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return convertDTO(u), nil
+	return convertEntity(u)
 }
 
-func (r *Repository) FindByName(ctx context.Context, firstName, lastName string) (*DTO, error) {
+func (r *Repository) FindByName(ctx context.Context, firstName, lastName string) (*User, error) {
 	params := infrastructure.FindUserByNameParams{
 		FirstName: firstName,
 		LastName:  lastName,
@@ -55,10 +57,10 @@ func (r *Repository) FindByName(ctx context.Context, firstName, lastName string)
 		return nil, err
 	}
 
-	return convertDTO(u), nil
+	return convertEntity(u)
 }
 
-func (r *Repository) UpdateName(ctx context.Context, id, firstName, lastName string) (*DTO, error) {
+func (r *Repository) UpdateName(ctx context.Context, id, firstName, lastName string) (*User, error) {
 	params := infrastructure.UpdateUserNameParams{
 		FirstName: firstName,
 		LastName:  lastName,
@@ -70,18 +72,24 @@ func (r *Repository) UpdateName(ctx context.Context, id, firstName, lastName str
 		return nil, err
 	}
 
-	return convertDTO(u), nil
+	return convertEntity(u)
 }
 
-func (r *Repository) Delete(ctx context.Context, id string) (*DTO, error) {
+func (r *Repository) Delete(ctx context.Context, id string) (*User, error) {
 	u, err := r.queries.DeleteUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return convertDTO(u), nil
+	return convertEntity(u)
 }
 
-func convertDTO(u infrastructure.User) *DTO {
-	return NewDTO(u.ID, u.FirstName, u.LastName)
+func convertEntity(u infrastructure.User) (*User, error) {
+	id := uuid.MustParse(u.ID)
+	name, err := NewFullName(u.FirstName, u.LastName)
+	if err != nil {
+		return nil, err
+	}
+
+	return New(id, name), nil
 }

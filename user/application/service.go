@@ -4,8 +4,6 @@ import (
 	"context"
 	"ddd-demo/user"
 	"errors"
-
-	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -33,17 +31,17 @@ func (a *Service) Create(ctx context.Context, firstName, lastName string) (*user
 	}
 
 	// ユーザーを永続化
-	return a.repository.CreateUser(ctx, u.Id().String(), u.Name().FirstName(), u.Name().LastName())
-}
-
-func (a *Service) UpdateName(ctx context.Context, cmd *UpdateCommand) (*user.DTO, error) {
-	// ユーザー情報を永続層から再構築
-	dto, err := a.repository.FindById(ctx, cmd.id)
+	result, err := a.repository.CreateUser(ctx, u.Id().String(), u.Name().FirstName(), u.Name().LastName())
 	if err != nil {
 		return nil, err
 	}
 
-	u, err := toModel(dto)
+	return toDTO(result), nil
+}
+
+func (a *Service) UpdateName(ctx context.Context, cmd *UpdateCommand) (*user.DTO, error) {
+	// ユーザー情報を永続層から再構築
+	u, err := a.repository.FindById(ctx, cmd.id)
 	if err != nil {
 		return nil, err
 	}
@@ -63,14 +61,18 @@ func (a *Service) UpdateName(ctx context.Context, cmd *UpdateCommand) (*user.DTO
 	}
 
 	// 永続化
-	return a.repository.UpdateName(ctx, u.Id().String(), u.Name().FirstName(), u.Name().LastName())
-}
-
-func toModel(dto *user.DTO) (*user.User, error) {
-	n, err := user.NewFullName(dto.FirstName, dto.LastName)
+	result, err := a.repository.UpdateName(ctx, u.Id().String(), u.Name().FirstName(), u.Name().LastName())
 	if err != nil {
 		return nil, err
 	}
 
-	return user.New(uuid.MustParse(dto.Id), n), nil
+	return toDTO(result), nil
+}
+
+func toDTO(entity *user.User) *user.DTO {
+	return user.NewDTO(
+		entity.Id().String(),
+		entity.Name().FirstName(),
+		entity.Name().LastName(),
+	)
 }
