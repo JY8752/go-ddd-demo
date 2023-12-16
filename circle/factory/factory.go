@@ -10,9 +10,10 @@ import (
 
 func CreateCircle(name *value.CircleName, owner *user.User) *entity.Circle {
 	id := uuid.NewString()
-	return &entity.Circle{
-		Id:      value.NewCircleId(id),
-		Name:    name,
-		OwnerId: owner.Id(),
-	}
+	return entity.NewCircle(
+		value.NewCircleId(id),
+		name,
+		owner.Notify().Id,
+		[]uuid.UUID{},
+	)
 }

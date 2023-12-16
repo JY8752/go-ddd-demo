@@ -15,6 +15,6 @@ func NewCircleDomainService(circleRep repository.CircleRepository) *CircleDomain
 }
 
 func (c *CircleDomainService) Exists(circle *entity.Circle) bool {
-	_, err := c.circleRep.FindByName(context.TODO(), circle.Name)
+	_, err := c.circleRep.FindByName(context.TODO(), circle.Notify().Name)
 	return err == nil
 }

@@ -46,7 +46,7 @@ func main() {
 	}
 
 	// ユーザーを永続化
-	dto, err := repository.CreateUser(ctx, u.Id().String(), u.Name().FirstName(), u.Name().LastName())
+	dto, err := repository.CreateUser(ctx, u)
 	if err != nil {
 		log.Fatal(err)
 	}

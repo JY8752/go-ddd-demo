@@ -39,7 +39,7 @@ func (c *CircleApplicationService) Create(cmd command.CrateCircle) error {
 
 	// サークル名の重複確認
 	if c.cds.Exists(circle) {
-		return errors.New("already eixists circle name " + circle.Name.Value())
+		return errors.New("already eixists circle name " + cmd.Name)
 	}
 
 	// 永続化

@@ -22,11 +22,12 @@ func (r *Repository) CreateTables(ctx context.Context, ddl string) error {
 	return err
 }
 
-func (r *Repository) CreateUser(ctx context.Context, id, firstName, lastName string) (*User, error) {
+func (r *Repository) CreateUser(ctx context.Context, user *User) (*User, error) {
+	notification := user.Notify()
 	params := infrastructure.CrateUserParams{
-		ID:        id,
-		FirstName: firstName,
-		LastName:  lastName,
+		ID:        notification.Id.String(),
+		FirstName: notification.Name.firstName,
+		LastName:  notification.Name.lastName,
 	}
 
 	u, err := r.queries.CrateUser(ctx, params)
@@ -60,11 +61,12 @@ func (r *Repository) FindByName(ctx context.Context, firstName, lastName string)
 	return convertEntity(u)
 }
 
-func (r *Repository) UpdateName(ctx context.Context, id, firstName, lastName string) (*User, error) {
+func (r *Repository) UpdateName(ctx context.Context, user *User) (*User, error) {
+	notification := user.Notify()
 	params := infrastructure.UpdateUserNameParams{
-		FirstName: firstName,
-		LastName:  lastName,
-		ID:        id,
+		FirstName: notification.Name.firstName,
+		LastName:  notification.Name.lastName,
+		ID:        notification.Id.String(),
 	}
 
 	u, err := r.queries.UpdateUserName(ctx, params)

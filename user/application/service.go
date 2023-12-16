@@ -31,7 +31,7 @@ func (a *Service) Create(ctx context.Context, firstName, lastName string) (*user
 	}
 
 	// ユーザーを永続化
-	result, err := a.repository.CreateUser(ctx, u.Id().String(), u.Name().FirstName(), u.Name().LastName())
+	result, err := a.repository.CreateUser(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (a *Service) UpdateName(ctx context.Context, cmd *UpdateCommand) (*user.DTO
 	}
 
 	// 永続化
-	result, err := a.repository.UpdateName(ctx, u.Id().String(), u.Name().FirstName(), u.Name().LastName())
+	result, err := a.repository.UpdateName(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +70,10 @@ func (a *Service) UpdateName(ctx context.Context, cmd *UpdateCommand) (*user.DTO
 }
 
 func toDTO(entity *user.User) *user.DTO {
+	notification := entity.Notify()
 	return user.NewDTO(
-		entity.Id().String(),
-		entity.Name().FirstName(),
-		entity.Name().LastName(),
+		notification.Id.String(),
+		notification.Name.FirstName(),
+		notification.Name.LastName(),
 	)
 }

@@ -6,7 +6,6 @@ import (
 	"ddd-demo/circle/entity"
 	"ddd-demo/circle/value"
 	"ddd-demo/infrastructure"
-	"ddd-demo/user"
 
 	"github.com/google/uuid"
 )
@@ -26,10 +25,11 @@ func NewCircleRepository(db *sql.DB) CircleRepository {
 }
 
 func (cr *circleRepository) Save(ctx context.Context, circle *entity.Circle) error {
+	notification := circle.Notify()
 	params := infrastructure.CreateCircleParams{
-		ID:     circle.Id.Value(),
-		Name:   circle.Name.Value(),
-		UserID: circle.OwnerId.String(),
+		ID:     circle.Id().Value(),
+		Name:   notification.Name.Value(),
+		UserID: notification.OwnerId.String(),
 	}
 	_, err := cr.queries.CreateCircle(ctx, params)
 	return err
@@ -50,5 +50,5 @@ func toEntity(c infrastructure.Circle) (*entity.Circle, error) {
 		return nil, err
 	}
 	ownerId := uuid.MustParse(c.UserID)
-	return entity.NewCircle(id, name, ownerId, []user.User{}), nil
+	return entity.NewCircle(id, name, ownerId, []uuid.UUID{}), nil
 }
