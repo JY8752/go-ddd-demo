@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 	"database/sql"
-	"ddd-demo/user"
+	"ddd-demo/domain/user"
+	infra_user "ddd-demo/infrastructure/user"
 	"fmt"
 	"log"
 
@@ -23,10 +24,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	repository := user.NewRepository(db)
+	repository := infra_user.NewRepository(db)
 
 	// テーブルを作成
-	if err = repository.CreateTables(ctx, ddl); err != nil {
+	if db.ExecContext(ctx, ddl); err != nil {
 		log.Fatal(err)
 	}
 
@@ -36,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	u := user.NewFromName(name)
+	u := user.Create(name)
 
 	// ドメインサービスを作成
 	service := user.NewService(repository)
@@ -46,7 +47,7 @@ func main() {
 	}
 
 	// ユーザーを永続化
-	dto, err := repository.CreateUser(ctx, u)
+	dto, err := repository.Create(ctx, u)
 	if err != nil {
 		log.Fatal(err)
 	}

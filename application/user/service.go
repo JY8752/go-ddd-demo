@@ -1,21 +1,21 @@
-package application
+package user
 
 import (
 	"context"
-	"ddd-demo/user"
+	"ddd-demo/domain/user"
 	"errors"
 )
 
-type Service struct {
-	repository *user.Repository
+type ApplicationService struct {
+	repository user.Repository
 	service    *user.Service
 }
 
-func NewService(r *user.Repository, s *user.Service) *Service {
-	return &Service{r, s}
+func NewApplicationService(r user.Repository, s *user.Service) *ApplicationService {
+	return &ApplicationService{r, s}
 }
 
-func (a *Service) Create(ctx context.Context, firstName, lastName string) (*user.DTO, error) {
+func (a *ApplicationService) Create(ctx context.Context, firstName, lastName string) (*DTO, error) {
 	// 名前は値オブジェクト
 	name, err := user.NewFullName(firstName, lastName)
 	if err != nil {
@@ -23,7 +23,7 @@ func (a *Service) Create(ctx context.Context, firstName, lastName string) (*user
 	}
 
 	// Userをドメインモデルで表現
-	u := user.NewFromName(name)
+	u := user.Create(name)
 
 	// ドメインサービスでユーザーの存在確認
 	if a.service.Exists(u) {
@@ -31,7 +31,7 @@ func (a *Service) Create(ctx context.Context, firstName, lastName string) (*user
 	}
 
 	// ユーザーを永続化
-	result, err := a.repository.CreateUser(ctx, u)
+	result, err := a.repository.Create(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (a *Service) Create(ctx context.Context, firstName, lastName string) (*user
 	return toDTO(result), nil
 }
 
-func (a *Service) UpdateName(ctx context.Context, cmd *UpdateCommand) (*user.DTO, error) {
+func (a *ApplicationService) UpdateName(ctx context.Context, cmd *UpdateCommand) (*DTO, error) {
 	// ユーザー情報を永続層から再構築
 	u, err := a.repository.FindById(ctx, cmd.id)
 	if err != nil {
@@ -69,9 +69,9 @@ func (a *Service) UpdateName(ctx context.Context, cmd *UpdateCommand) (*user.DTO
 	return toDTO(result), nil
 }
 
-func toDTO(entity *user.User) *user.DTO {
+func toDTO(entity *user.User) *DTO {
 	notification := entity.Notify()
-	return user.NewDTO(
+	return NewDTO(
 		notification.Id.String(),
 		notification.Name.FirstName(),
 		notification.Name.LastName(),

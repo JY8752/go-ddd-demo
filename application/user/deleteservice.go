@@ -1,15 +1,15 @@
-package application
+package user
 
 import (
 	"context"
-	"ddd-demo/user"
+	"ddd-demo/domain/user"
 )
 
 type DeleteService struct {
-	repository *user.Repository
+	repository user.Repository
 }
 
-func NewDeleteService(r *user.Repository) *DeleteService {
+func NewDeleteService(r user.Repository) *DeleteService {
 	return &DeleteService{r}
 }
 

@@ -1,13 +1,11 @@
-package notify
+package circle
 
 import (
-	"ddd-demo/circle/value"
-
 	"github.com/google/uuid"
 )
 
 type CircleNotification struct {
-	Name    *value.CircleName
+	Name    *CircleName
 	OwnerId uuid.UUID
 	Members []uuid.UUID
 }

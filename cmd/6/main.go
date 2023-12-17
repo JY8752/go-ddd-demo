@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"database/sql"
-	"ddd-demo/user"
-	"ddd-demo/user/application"
+	app_user "ddd-demo/application/user"
+	"ddd-demo/domain/user"
+	infra_user "ddd-demo/infrastructure/user"
 	"fmt"
 	"log"
 )
@@ -17,9 +18,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	r := user.NewRepository(db)
+	r := infra_user.NewRepository(db)
 	s := user.NewService(r)
-	as := application.NewService(r, s)
+	as := app_user.NewApplicationService(r, s)
 
 	result, err := as.Create(ctx, "yamanaka", "junichi")
 	if err != nil {

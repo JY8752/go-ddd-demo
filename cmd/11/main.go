@@ -2,11 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"ddd-demo/circle/appservice"
-	"ddd-demo/circle/command"
-	"ddd-demo/circle/domainservice"
-	"ddd-demo/circle/repository"
-	"ddd-demo/user"
+	application_circle "ddd-demo/application/circle"
+	domain_circle "ddd-demo/domain/circle"
+	"ddd-demo/infrastructure/circle"
+	"ddd-demo/infrastructure/user"
 	"fmt"
 	"log"
 )
@@ -18,12 +17,12 @@ func main() {
 	}
 
 	userRep := user.NewRepository(db)
-	circleRep := repository.NewCircleRepository(db)
-	cds := domainservice.NewCircleDomainService(circleRep)
+	circleRep := circle.NewCircleRepository(db)
+	cds := domain_circle.NewDomainService(circleRep)
 
-	cas := appservice.NewCircleApplicationService(userRep, cds, circleRep)
+	cas := application_circle.NewApplicationService(userRep, cds, circleRep)
 
-	if err = cas.Create(command.CrateCircle{
+	if err = cas.Create(application_circle.CrateCommand{
 		Id:   "userId",
 		Name: "circleName",
 	}); err != nil {

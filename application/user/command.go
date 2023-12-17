@@ -1,4 +1,4 @@
-package application
+package user
 
 type UpdateCommand struct {
 	id        string

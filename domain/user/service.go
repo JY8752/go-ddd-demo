@@ -5,10 +5,10 @@ import (
 )
 
 type Service struct {
-	r *Repository
+	r Repository
 }
 
-func NewService(r *Repository) *Service {
+func NewService(r Repository) *Service {
 	return &Service{r}
 }
 

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"ddd-demo/domain/user"
 	"ddd-demo/money"
-	"ddd-demo/user"
 	"fmt"
 	"log"
 

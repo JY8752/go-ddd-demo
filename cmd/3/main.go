@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ddd-demo/user"
+	"ddd-demo/domain/user"
 	"fmt"
 	"log"
 )
@@ -12,8 +12,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	u := user.NewFromName(n)
-	uu := user.NewFromName(n)
+	u := user.Create(n)
+	uu := user.Create(n)
 	fmt.Println(u.Equals(uu)) // false 同じ名前のユーザーだけど識別子が異なる
 
 	n, err = user.NewFullName("yamanaka", "jun")

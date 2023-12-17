@@ -1,17 +1,26 @@
 package user
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/google/uuid"
 )
+
+type Repository interface {
+	Create(ctx context.Context, user *User) (*User, error)
+	FindById(ctx context.Context, id string) (*User, error)
+	FindByName(ctx context.Context, firstName, lastName string) (*User, error)
+	UpdateName(ctx context.Context, user *User) (*User, error)
+	Delete(ctx context.Context, id string) (*User, error)
+}
 
 type User struct {
 	id   uuid.UUID
 	name *FullName
 }
 
-func NewFromName(name *FullName) *User {
+func Create(name *FullName) *User {
 	uuid := uuid.New()
 	return &User{id: uuid, name: name}
 }
@@ -30,8 +39,8 @@ func New(id uuid.UUID, name *FullName) *User {
 // }
 
 // ゲッターのかわりに通知オブジェクトを使う
-func (u *User) Notify() *UserNotification {
-	return &UserNotification{u.id, u.name}
+func (u *User) Notify() *Notification {
+	return &Notification{u.id, u.name}
 }
 
 func (u *User) Equals(other *User) bool {

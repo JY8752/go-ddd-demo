@@ -3,31 +3,27 @@ package user
 import (
 	"context"
 	"database/sql"
+	"ddd-demo/domain/user"
 	"ddd-demo/infrastructure"
 
 	"github.com/google/uuid"
 )
 
-type Repository struct {
+type repository struct {
 	db      *sql.DB
 	queries *infrastructure.Queries
 }
 
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{db, infrastructure.New(db)}
+func NewRepository(db *sql.DB) user.Repository {
+	return &repository{db, infrastructure.New(db)}
 }
 
-func (r *Repository) CreateTables(ctx context.Context, ddl string) error {
-	_, err := r.db.ExecContext(ctx, ddl)
-	return err
-}
-
-func (r *Repository) CreateUser(ctx context.Context, user *User) (*User, error) {
+func (r *repository) Create(ctx context.Context, user *user.User) (*user.User, error) {
 	notification := user.Notify()
 	params := infrastructure.CrateUserParams{
 		ID:        notification.Id.String(),
-		FirstName: notification.Name.firstName,
-		LastName:  notification.Name.lastName,
+		FirstName: notification.Name.FirstName(),
+		LastName:  notification.Name.LastName(),
 	}
 
 	u, err := r.queries.CrateUser(ctx, params)
@@ -38,7 +34,7 @@ func (r *Repository) CreateUser(ctx context.Context, user *User) (*User, error) 
 	return convertEntity(u)
 }
 
-func (r *Repository) FindById(ctx context.Context, id string) (*User, error) {
+func (r *repository) FindById(ctx context.Context, id string) (*user.User, error) {
 	u, err := r.queries.FindUser(ctx, id)
 	if err != nil {
 		return nil, err
@@ -47,7 +43,7 @@ func (r *Repository) FindById(ctx context.Context, id string) (*User, error) {
 	return convertEntity(u)
 }
 
-func (r *Repository) FindByName(ctx context.Context, firstName, lastName string) (*User, error) {
+func (r *repository) FindByName(ctx context.Context, firstName, lastName string) (*user.User, error) {
 	params := infrastructure.FindUserByNameParams{
 		FirstName: firstName,
 		LastName:  lastName,
@@ -61,11 +57,11 @@ func (r *Repository) FindByName(ctx context.Context, firstName, lastName string)
 	return convertEntity(u)
 }
 
-func (r *Repository) UpdateName(ctx context.Context, user *User) (*User, error) {
+func (r *repository) UpdateName(ctx context.Context, user *user.User) (*user.User, error) {
 	notification := user.Notify()
 	params := infrastructure.UpdateUserNameParams{
-		FirstName: notification.Name.firstName,
-		LastName:  notification.Name.lastName,
+		FirstName: notification.Name.FirstName(),
+		LastName:  notification.Name.LastName(),
 		ID:        notification.Id.String(),
 	}
 
@@ -77,7 +73,7 @@ func (r *Repository) UpdateName(ctx context.Context, user *User) (*User, error) 
 	return convertEntity(u)
 }
 
-func (r *Repository) Delete(ctx context.Context, id string) (*User, error) {
+func (r *repository) Delete(ctx context.Context, id string) (*user.User, error) {
 	u, err := r.queries.DeleteUser(ctx, id)
 	if err != nil {
 		return nil, err
@@ -86,12 +82,12 @@ func (r *Repository) Delete(ctx context.Context, id string) (*User, error) {
 	return convertEntity(u)
 }
 
-func convertEntity(u infrastructure.User) (*User, error) {
+func convertEntity(u infrastructure.User) (*user.User, error) {
 	id := uuid.MustParse(u.ID)
-	name, err := NewFullName(u.FirstName, u.LastName)
+	name, err := user.NewFullName(u.FirstName, u.LastName)
 	if err != nil {
 		return nil, err
 	}
 
-	return New(id, name), nil
+	return user.New(id, name), nil
 }
